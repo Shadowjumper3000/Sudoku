@@ -14,8 +14,11 @@
 // Declare function prototypes here
 int printField();
 int acceptInput();
+int acceptField();
 int solveField();
-int copyField();
+int isValid(int, int, int);
+int findEmptyCell(int*, int*);
+
 
 int determineOS() {
     #ifdef _WIN32
@@ -47,6 +50,19 @@ int clearScreen() {
         printf("Unknown OS\n");
     }
     return 0;
+}
+
+int loop() {
+    if (DEBUG) {printf("[DEBUG] Looping\n");}
+    printf("<----------------------->\n");
+    printf("Do you want to play again? (y/n): ");
+    char c;
+    scanf(" %c", &c);
+    if (c == 'y') {
+        return 1;
+    } else {
+        return 0;
+    }
 }
 
 #endif

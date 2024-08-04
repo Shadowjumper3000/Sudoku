@@ -1,14 +1,43 @@
 #include "main.h"
 
-int sudokuField[9][3][3] = {0};
-int fixedNumbers[9][3][3] = {0}; // Array to mark fixed numbers
+int sudokuField[9][3][3] = {
+    {{7, 9, 4}, {0, 8, 0}, {0, 3, 2}},
+    {{0, 2, 1}, {4, 0, 0}, {5, 9, 0}},
+    {{3, 0, 5}, {0, 0, 0}, {0, 0, 4}},
+    {{1, 3, 9}, {0, 6, 5}, {0, 2, 0}},
+    {{0, 0, 0}, {2, 4, 3}, {0, 0, 0}},
+    {{0, 4, 0}, {7, 0, 1}, {0, 0, 0}},
+    {{4, 5, 3}, {0, 0, 0}, {8, 0, 0}},
+    {{0, 6, 7}, {0, 5, 0}, {3, 0, 9}},
+    {{0, 0, 8}, {3, 0, 0}, {0, 5, 0}}
+};
+int fixedNumbers[9][3][3] = {
+    {{7, 9, 4}, {0, 8, 0}, {0, 3, 2}},
+    {{0, 2, 1}, {4, 0, 0}, {5, 9, 0}},
+    {{3, 0, 5}, {0, 0, 0}, {0, 0, 4}},
+    {{1, 3, 9}, {0, 6, 5}, {0, 2, 0}},
+    {{0, 0, 0}, {2, 4, 3}, {0, 0, 0}},
+    {{0, 4, 0}, {7, 0, 1}, {0, 0, 0}},
+    {{4, 5, 3}, {0, 0, 0}, {8, 0, 0}},
+    {{0, 6, 7}, {0, 5, 0}, {3, 0, 9}},
+    {{0, 0, 8}, {3, 0, 0}, {0, 5, 0}}
+};
+
+
+int inputting = 1;
 
 int main() {
-    printf("Welcome to Sudoku!\n");
     do {
+        printf("Welcome to Sudoku!\n");
         printField();
-        acceptInput();
-    } while (1);
+        //acceptField();
+        do {
+            printField();
+            acceptInput();
+        } while (inputting);
+    solveField();
+    printField();
+    } while (loop());
 }
 
 int printField() {
@@ -66,26 +95,53 @@ int checkInput(int row, int col, int val) {
     return 0;
 }
 
-int acceptInput() {
+int acceptField() {
     if (DEBUG) {printf("[DEBUG] Accepting input\n");}
-    printf("If you wish to solve the field, Enter \"s\"\nOtherwise Enter the column, row and value to change: ");
-    int ch = getchar();
-    if (ch == 's' || ch == 'S') {
-        solveField();
-        return 0; // Exit the function after solving the field
+    printf("Enter the Sudoku field (9x9 grid, use 0 for empty cells, fix any mistakes later):\n");
+    
+    for (int i = 0; i < 9; i++) {
+        for (int j = 0; j < 9; j++) {
+            int val;
+            scanf("%d", &val);
+            if (val < 0 || val > 9) {
+                printf("Invalid input. Please enter numbers between 0 and 9.\n");
+                return 1;
+            }
+            sudokuField[i][j / 3][j % 3] = val;
+            fixedNumbers[i][j / 3][j % 3] = (val != 0); // Mark the position as fixed
+            printField();
+        }
     }
-    ungetc(ch, stdin); // Put the character back to the input stream
-    int row, col, val;
-    scanf("%d %d %d", &col, &row, &val);
-    if (checkInput(row, col, val)) {
-        return 1;
-    }
-    sudokuField[row - 1][(col - 1) / 3][(col - 1) % 3] = val;
-    fixedNumbers[row - 1][(col - 1) / 3][(col - 1) % 3] = (val != 0); // Mark the position as fixed
+    
     clearScreen();
     return 0;
 }
 
+int acceptInput() {
+    if (DEBUG) {printf("[DEBUG] Accepting input\n");}
+    printf("If you wish to solve the field, Enter three 0's\nOtherwise Enter the row, column and value to change: ");
+
+    int row, col, val;
+    if (scanf("%d %d %d", &row, &col, &val) != 3) {
+        printf("Invalid input. Please enter row and column between 1 and 9, and value between 0 and 9.\n");
+        while (getchar() != '\n'); // Clear the input buffer
+        return 1;
+    }
+    if (row == 0 && col == 0 && val == 0) {
+        inputting = 0;
+        return 0;
+    }
+    if (row < 1 || row > 9 || col < 1 || col > 9 || val < 0 || val > 9) {
+        printf("Invalid input. Please enter row and column between 1 and 9, and value between 0 and 9.\n");
+        return 1;
+    }
+
+    row--, col--;
+    sudokuField[row][col / 3][col % 3] = val;
+    fixedNumbers[row][col / 3][col % 3] = (val != 0);
+    while (getchar() != '\n'); // Clear the input buffer
+    return 0;
+}
 int solveField() {
     if (DEBUG) {printf("[DEBUG] Solving field\n");}
     for (int i = 0; i < 9; i++) {
@@ -103,7 +159,6 @@ int solveField() {
                 return 0;
             }
         }
-    printField();
     }
-    return 1;
+    return 1; // Return 1 when the puzzle is solved
 }
