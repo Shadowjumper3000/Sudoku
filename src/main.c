@@ -23,11 +23,6 @@ int fixedNumbers[9][3][3] = {
     {{0, 0, 8}, {3, 0, 0}, {0, 5, 0}}
 };
 
-typedef struct {
-    int row;
-    int col;
-    int val;
-} Cell;
 
 int inputting = 1;
 
@@ -40,10 +35,9 @@ int main() {
             printField();
             acceptInput();
         } while (inputting);
-        solveField();
-        printField();
+    solveField();
+    printField();
     } while (loop());
-    return 0;
 }
 
 int printField() {
@@ -151,36 +145,21 @@ int acceptInput() {
 
 int solveField() {
     if (DEBUG) {printf("[DEBUG] Solving field\n");}
-    Cell stack[81];
-    int top = -1;
-    int row = 0, col = 0;
-
-    while (row < 9) {
-        if (sudokuField[row][col / 3][col % 3] == 0) {
-            bool found = false;
-            for (int val = 1; val <= 9; val++) {
-                if (!checkInput(row + 1, col + 1, val)) {
-                    sudokuField[row][col / 3][col % 3] = val;
-                    stack[++top] = (Cell){row, col, val};
-                    found = true;
-                    break;
+    for (int i = 0; i < 9; i++) {
+        for (int j = 0; j < 9; j++) {
+            if (sudokuField[i][j / 3][j % 3] == 0) {
+                for (int k = 1; k <= 9; k++) {
+                    if (!checkInput(i + 1, j + 1, k)) {
+                        sudokuField[i][j / 3][j % 3] = k;
+                        if (solveField()) {
+                            return 1;
+                        }
+                        sudokuField[i][j / 3][j % 3] = 0;
+                    }
                 }
+                return 0;
             }
-            if (!found) {
-                if (top == -1) {
-                    return 0; // No solution
-                }
-                Cell last = stack[top--];
-                row = last.row;
-                col = last.col;
-                sudokuField[row][col / 3][col % 3] = 0;
-                continue;
-            }
-        }
-        if (++col == 9) {
-            col = 0;
-            row++;
         }
     }
-    return 1; // Solved
+    return 1; // Return 1 when the puzzle is solved
 }

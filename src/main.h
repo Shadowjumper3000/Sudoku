@@ -16,8 +16,6 @@ int printField();
 int acceptInput();
 int acceptField();
 int solveField();
-int isValid(int, int, int);
-int findEmptyCell(int*, int*);
 
 
 int determineOS() {
@@ -53,16 +51,13 @@ int clearScreen() {
 }
 
 int loop() {
-    if (DEBUG) {printf("[DEBUG] Looping\n");}
-    printf("<----------------------->\n");
+    char input[10];
     printf("Do you want to play again? (y/n): ");
-    char c;
-    scanf(" %c", &c);
-    if (c == 'y') {
+    fgets(input, 10, stdin);
+    if (input[0] == 'y') {
         return 1;
     } else {
         return 0;
     }
 }
-
 #endif
