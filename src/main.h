@@ -9,7 +9,7 @@
 
 
 // Declare any global variables here
-#define DEBUG 0
+#define DEBUG 1
 
 // Declare function prototypes here
 int printField();
